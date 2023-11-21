@@ -8,3 +8,18 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Lecture des données
+```{r echo = FALSE}
+# Importation des données 
+my_dtf_initial <- read.table("data/placenta.txt", header = TRUE, row.names = "NOM", dec = ".") # Première ligne et colonne en indice
+dim_initial <- dim(my_dtf_initial) # premières dimensions
+cat("Le dtf initial est de dimensions", dim_initial, ".")
+# str(my_dtf_initial)
+# summary(my_dtf_initial)
+
+ind_char <- c(1,3)
+ind_ci_2 <- which(colnames(my_dtf_initial) == "CI" | colnames(my_dtf_initial) == "CI3")
+ind_ci_3 <- which(colnames(my_dtf_initial) == "CI" | colnames(my_dtf_initial) == "CI2")
+my_dtf2 <- my_dtf_initial[,-c(ind_char, ind_ci_2)]
+my_dtf3 <- my_dtf_initial[,-c(ind_char, ind_ci_3)]
+```
