@@ -23,3 +23,105 @@ ind_ci_3 <- which(colnames(my_dtf_initial) == "CI" | colnames(my_dtf_initial) ==
 my_dtf2 <- my_dtf_initial[,-c(ind_char, ind_ci_2)]
 my_dtf3 <- my_dtf_initial[,-c(ind_char, ind_ci_3)]
 ```
+
+# Nettoyage des données
+## Suppression des NAs
+```{r echo = FALSE}
+# Supprimer les NAs
+nb_na_dtf2 <- sum(is.na(my_dtf2)) # calcul du nombre de NA
+nb_na_dtf3 <- sum(is.na(my_dtf3)) # calcul du nombre de NA
+
+cat("Dans my_dtf2, il y a", nb_na_dtf2,"NA.\n")
+cat("Dans my_dtf3, il y a", nb_na_dtf3,"NA.")
+```
+
+## Supprimer les descripteurs à variance nulle
+```{r echo = FALSE}
+# Calcul des moyennes et des variances sur les descripteurs quantitatifs
+moyennes2 <- apply(my_dtf2, MARGIN = 2, FUN = mean)
+variances2 <- apply(my_dtf2, MARGIN = 2, FUN = var) 
+hist(variances2)
+moyennes3 <- apply(my_dtf3, MARGIN = 2, FUN = mean)
+variances3 <- apply(my_dtf3, MARGIN = 2, FUN = var) 
+hist(variances3)
+
+ind_var_0_2 <- which(variances2 == 0)
+ind_var_0_3 <- which(variances3 == 0)
+dim(my_dtf2)
+dim(my_dtf3)
+my_dtf2 <- my_dtf2[,-ind_var_0_2]
+my_dtf3 <- my_dtf3[,-ind_var_0_3]
+dim(my_dtf2)
+dim(my_dtf3)
+
+# quantiles <- quantile(variances, c(0.23, 0.25, 0.5, 0.75))
+# quantiles_ecarts <- quantile(ecarts, c(0.23, 0.25, 0.5, 0.75))
+# quantiles
+# quantiles_ecarts
+# quantiles[1]
+# quantiles_ecarts[1]
+
+# Nouveau dtf sans les descripteurs à variances nulles
+# ind_var_0 <- which(variances == 0)
+# my_dtf_ss_var_0 <- my_dtf_initial[,-ind_var_0]
+
+cat("On a retiré", length(ind_var_0_2), "descripteurs à variance nulle.")
+cat("On a retiré", length(ind_var_0_3), "descripteurs à variance nulle.")
+```
+
+## Supprimer les descripteurs trop corrélés entre eux
+```{r echo = FALSE}
+library(corrplot)
+library(caret)
+# On affiche la matrice de corrélation
+matrice_corr2 <- cor(my_dtf2, method = "pearson")
+matrice_corr3 <- cor(my_dtf3, method = "pearson")
+corrplot(matrice_corr2, type = "lower", method = 'color')
+corrplot(matrice_corr3, type = "lower", method = 'color')
+print("Le plot n'est pas exploitable car il nous reste trop de variables. Supprimons les variables trop corrélées.")
+
+# On supprime les variables dont la corrélation est > 0.85
+col_suppr2 <- findCorrelation(x = matrice_corr2, cutoff = 0.90)
+col_suppr3 <- findCorrelation(x = matrice_corr3, cutoff = 0.90)
+my_dtf2 <- my_dtf2[,-col_suppr2]
+my_dtf3 <- my_dtf3[,-col_suppr3]
+dim(my_dtf2)
+dim(my_dtf3)
+
+# On raffiche la matrice de corrélation
+matrice_corr2 <- cor(my_dtf2, method = "pearson")
+matrice_corr3 <- cor(my_dtf3, method = "pearson")
+corrplot(matrice_corr2, type = "lower", method = 'color')
+corrplot(matrice_corr3, type = "lower", method = 'color')
+cat("On a retiré", length(col_suppr2), "descripteurs.")
+cat("On a retiré", length(col_suppr3), "descripteurs.")
+```
+
+## Distribution des VA : boxplot
+```{r echo = FALSE}
+# affichage des boxplot
+boxplot(my_dtf2, main = "boxplot du jeu de données")
+boxplot(my_dtf3, main = "boxplot du jeu de données")
+print("Il y a un point abérrant.")
+
+dim(my_dtf2)
+dim(my_dtf3)
+ind_ab2 <- apply(my_dtf2, 1, function(row) any(row > 1500000))
+ind_ab3 <- apply(my_dtf3, 1, function(row) any(row > 1500000))
+my_dtf2 <- my_dtf2[-which(ind_ab2 == TRUE),]
+my_dtf3 <- my_dtf3[-which(ind_ab3 == TRUE),]
+dim(my_dtf2)
+dim(my_dtf3)
+boxplot(my_dtf2, main = "boxplot du jeu de données")
+boxplot(my_dtf3, main = "boxplot du jeu de données")
+
+# normalisation
+my_dtf2_scaled <- scale(my_dtf2, center = TRUE, scale = TRUE)
+my_dtf3_scaled <- scale(my_dtf3, center = TRUE, scale = TRUE)
+dim(my_dtf2_scaled)
+dim(my_dtf3_scaled)
+
+# visualisation
+boxplot(my_dtf2_scaled, main = "boxplot du jeu de données normalisé")
+boxplot(my_dtf3_scaled, main = "boxplot du jeu de données normalisé")
+```
