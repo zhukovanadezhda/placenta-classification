@@ -125,3 +125,20 @@ dim(my_dtf3_scaled)
 boxplot(my_dtf2_scaled, main = "boxplot du jeu de données normalisé")
 boxplot(my_dtf3_scaled, main = "boxplot du jeu de données normalisé")
 ```
+
+## ACP
+```{r echo = FALSE}
+library(FactoMineR)
+res_PCA2 <- PCA(my_dtf2_scaled, graph = FALSE)
+res_PCA3 <- PCA(my_dtf3_scaled, graph = FALSE)
+
+# variables
+plot(res_PCA2, choix = "var")
+plot(res_PCA3, choix = "var")
+
+# couples
+ind_hab2 <- which(colnames(my_dtf2_scaled) == "CI2")
+ind_hab3 <- which(colnames(my_dtf3_scaled) == "CI3")
+plot(res_PCA2, habillage = ind_hab2, cex = 0)
+plot(res_PCA3, habillage = ind_hab3, cex = 0)
+```
