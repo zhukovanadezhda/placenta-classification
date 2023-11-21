@@ -142,3 +142,9 @@ ind_hab3 <- which(colnames(my_dtf3_scaled) == "CI3")
 plot(res_PCA2, habillage = ind_hab2, cex = 0)
 plot(res_PCA3, habillage = ind_hab3, cex = 0)
 ```
+# Téléchargement des données
+```{r echo = FALSE}
+write.csv(my_dtf2_scaled, file = "data/data_pred_ci2.csv")
+write.csv(my_dtf3_scaled, file = "data/data_pred_ci3.csv")
+```
+
