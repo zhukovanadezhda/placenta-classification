@@ -1,0 +1,10 @@
+---
+title: "Classification des données de placenta.txt"
+author: "Gloria BENOIT, Dounia BENYAKHLAF, Karine DUONG, Louise LAM, Nadezhda ZHUKOVA"
+date: "2023-11-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
