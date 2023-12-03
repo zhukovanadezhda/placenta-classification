@@ -50,11 +50,6 @@ if __name__ == "__main__":
         my_test_labels,
     ) = get_train_test_samples()
 
-    #print(my_train_data.shape)
-    #print(my_test_data.shape)
-    #print(my_train_labels)
-    print(DATA)
-
     #Construction du reseau
     model = Sequential() #creation reseau vide
     model.add(Dense(16, activation = "relu", input_shape = (DATA.shape[1]-1,))) #ajout d'une premiere couche dense d'entrée | input_shape ???????
@@ -65,13 +60,18 @@ if __name__ == "__main__":
     model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=["accuracy"])
 
     #Entrainer le modele
-    res_train = model.fit(my_train_data, my_train_labels, batch_size=32, epochs=10)
+    res_train = model.fit(my_train_data, my_train_labels, validation_split=0.33, batch_size=32, epochs=10)
 
+    print(res_train.history.keys())
     display_plot(res_train, 'accuracy')
     display_plot(res_train, 'loss')
+    display_plot(res_train, 'val_accuracy')
+    display_plot(res_train, 'val_loss')
 
-    # loss_and_metrics = model.evaluate(my_test_data, my_test_labels)
-    # print(loss_and_metrics)
-    # print('Loss = ',loss_and_metrics[0])
-    # print('Accuracy = ',loss_and_metrics[1])
+    #La fonction evaluate verifie la performance du model sur les donnees de test
+    print("------------------------------Evaluation du model------------------------------")
+    loss_and_metrics = model.evaluate(my_test_data, my_test_labels)
+    print(loss_and_metrics)
+    print('Loss = ',loss_and_metrics[0])
+    print('Accuracy = ',loss_and_metrics[1])
 
