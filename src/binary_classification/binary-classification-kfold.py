@@ -2,6 +2,8 @@
 from keras.models import Sequential
 from keras.layers import Dense
 from sklearn.model_selection import KFold
+from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay
+import tensorflow as tf
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
@@ -56,7 +58,7 @@ if __name__ == "__main__":
         print(f'Training for fold {fold_no} ...')
 
         #Entrainer le modele
-        res_train = model.fit(inputs.iloc[train], targets.iloc[train], validation_split=0.33, batch_size=32, epochs=10)
+        res_train = model.fit(inputs.iloc[train], targets.iloc[train], validation_split=0.33, batch_size=32, epochs=30)
         history_per_fold.append(res_train)
 
         #La fonction evaluate verifie la performance du model sur les donnees de test
@@ -66,6 +68,24 @@ if __name__ == "__main__":
         print(f'Score for fold {fold_no}: {model.metrics_names[0]} of {scores[0]}; {model.metrics_names[1]} of {scores[1]*100}%')
         acc_per_fold.append(scores[1] * 100)
         loss_per_fold.append(scores[0])
+
+        #Matrice de confusion : 
+        predicted = model.predict(inputs.iloc[test])
+        predicted = tf.squeeze(predicted)
+        predicted = np.array([1 if x >= 0.5 else 0 for x in predicted])
+        actual = np.array(targets.iloc[test])
+        conf_mat = confusion_matrix(actual, predicted)
+        displ = ConfusionMatrixDisplay(confusion_matrix=conf_mat)
+        displ.plot()
+
+
+        # Ajouter des titres et des étiquettes
+        plt.title('Matrice de Confusion')
+        plt.xlabel('Prédictions')
+        plt.ylabel('Valeurs Réelles')
+
+        # Enregistrer l'image en tant que fichier PNG
+        plt.savefig('matrice_confusion'+str(fold_no+1)+'.png')
 
         # Increase fold number
         fold_no = fold_no + 1
