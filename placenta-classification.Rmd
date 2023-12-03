@@ -135,9 +135,57 @@ plot(res_PCA3, choix = "var")
 plot(res_PCA2, habillage = ind_ci_2)
 plot(res_PCA3, habillage = ind_ci_3)
 ```
+
 # Téléchargement des données
 ```{r echo = FALSE}
 write.csv(my_dtf2_scaled, file = "data/data_pred_ci2.csv")
 write.csv(my_dtf3_scaled, file = "data/data_pred_ci3.csv")
 ```
+
+# Régression logistique pour prédire CI2
+## Préparation des échantillons
+```{r echo = FALSE}
+n_ind_2 <- nrow(my_dtf2_scaled)
+n_var_2 <- ncol(my_dtf2_scaled)
+
+# jeu d'apprentissage et de validation
+vApp2 <- sample(x = (1:n_ind_2), size = 2/3*(n_ind_2), replace = FALSE) # replace = tirages sans ou avec remise
+vVal2 <- (1:n_ind_2)[-vApp2]
+
+# VÉRIFICATIONS
+length(vVal2) + length(vApp2) == n_ind_2
+intersect(vVal2, vApp2)
+
+# Échantillons d'apprentissage et de validation
+matApp2 <- my_dtf2_scaled[vApp2,]
+matVal2 <- my_dtf2_scaled[vVal2,]
+
+# Vérification
+nrow(matApp2) == length(vApp2)
+```
+
+## Validation des échantillons
+```{r echo = FALSE}
+t.test(matApp2[,"CI2"],matVal2[,"CI2"])
+```
+On a une $p-value = 0.46 > 0.05$ donc au seuil de 5%, le test n'est pas significatif et on ne peut pas rejeter H0 (les deux échantillons contiennent les mêmes valeurs). L'homogénéité des deux échantillons est vérifiée.
+
+## Visualisation des échantillons
+```{r echo = FALSE}
+ech_type_2 <- rep("Apprentissage", n_ind_2)
+ech_type_2[vVal2] <- "Validation"
+TYPE2 <- as.factor(ech_type_2)
+my_dtf2_acp <- data.frame(my_dtf2_scaled, TYPE2)
+
+res_PCA_2 <- PCA(my_dtf2_acp, ind.sup = vVal2, quali.sup = ncol(my_dtf2_acp), graph = FALSE)
+plot(res_PCA_2, choix = "var")
+plot(res_PCA_2, habillage = ncol(my_dtf2_acp))
+```
+
+## Apprentissage du modèle
+```{r echo = FALSE}
+fit2 <- glm(CI2~., data = as.data.frame(matApp2), family = binomial(logit))
+summary(fit2)
+```
+
 
