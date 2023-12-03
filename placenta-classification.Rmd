@@ -55,17 +55,6 @@ my_dtf3 <- my_dtf3[,-ind_var_0_3]
 dim(my_dtf2)
 dim(my_dtf3)
 
-# quantiles <- quantile(variances, c(0.23, 0.25, 0.5, 0.75))
-# quantiles_ecarts <- quantile(ecarts, c(0.23, 0.25, 0.5, 0.75))
-# quantiles
-# quantiles_ecarts
-# quantiles[1]
-# quantiles_ecarts[1]
-
-# Nouveau dtf sans les descripteurs à variances nulles
-# ind_var_0 <- which(variances == 0)
-# my_dtf_ss_var_0 <- my_dtf_initial[,-ind_var_0]
-
 cat("On a retiré", length(ind_var_0_2), "descripteurs à variance nulle.")
 cat("On a retiré", length(ind_var_0_3), "descripteurs à variance nulle.")
 ```
@@ -143,7 +132,6 @@ plot(res_PCA2, choix = "var")
 plot(res_PCA3, choix = "var")
 
 # couples
-my_dtf3_scaled[,"CI3"]
 plot(res_PCA2, habillage = ind_ci_2)
 plot(res_PCA3, habillage = ind_ci_3)
 ```
